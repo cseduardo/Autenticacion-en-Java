@@ -1,0 +1,44 @@
+services:
+  autenticacion:
+    image: autenticacion
+    build:
+      context: ./autenticacion
+      dockerfile: ./Dockerfile
+    # Regresamos a 'on-failure' ya que el problema de inicio se detectó
+    restart: on-failure 
+    depends_on:
+      postgres-db-ejercicio:
+        condition: service_healthy
+    ports:
+      - 8083:8080
+    environment:
+      # El host es el nombre del servicio (postgres-db-ejercicio) y el puerto es el interno (5432)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db-ejercicio:5432/pruebas
+      - SPRING_DATASOURCE_USERNAME=userAuth
+      - SPRING_DATASOURCE_PASSWORD=P4$$w0rd
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  postgres-db-ejercicio:
+    image: postgres:16-alpine
+    container_name: postgres-ejercicio
+    restart: always
+    environment:
+      POSTGRES_USER: userAuth
+      POSTGRES_PASSWORD: P4$$w0rd
+      POSTGRES_DB: pruebas
+    ports:
+      - "5435:5432" # 5435 es el puerto del host; 5432 es el puerto interno del contenedor.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U userAuth -d pruebas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    # AÑADIDO: Un comando para esperar 5 segundos adicionales después de que el proceso principal de Postgres haya iniciado, 
+    # dándole tiempo para crear el usuario y la BD antes de aceptar conexiones externas.
+    command: ["postgres", "-c", "log_min_duration_statement=0", "-c", "max_connections=200"]
+
+volumes:
+  postgres_data: # Volumen para persistir los datos de la BD
