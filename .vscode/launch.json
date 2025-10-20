@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AutenticacionApplication<autenticacion>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ecc.mx.autenticacion.AutenticacionApplication",
+            "projectName": "autenticacion",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

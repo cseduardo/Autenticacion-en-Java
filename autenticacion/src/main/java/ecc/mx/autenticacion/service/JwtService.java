@@ -7,19 +7,19 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtService {
-    private String secretJwt="ba193e49ea979d48236c15cf63401280e696ebd05008da3187427b8a23dff4d6";
+    @Value("${jwt.service.key}")
+    private String secretJwt;
 
     SecretKey GenerateDigitalKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretJwt);
